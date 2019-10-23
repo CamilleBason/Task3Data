@@ -7,24 +7,28 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(readr)
+library(tidyverse)
+library(ggplot2)
 ```
 
 ## Read the datas
 
 
 ```{r cars}
-library(readr)
+
 births2017 <-
-  read_fwf("Nat2017PublicUS.c20180516.r20180808.txt" ,
+  read_fwf("../Nat2017PublicUS.c20180516.r20180808.txt" ,
            fwf_positions(start = c(13,475,504),
                          end = c(14,475,507),
                          col_names = c("birth_month","sex", "weigth")
                          )
            )
 ```
+
 ```{r}
 births2018 <-
-  read_fwf("Nat2018PublicUS.c20190509.r20190717.txt" ,
+  read_fwf("../Nat2018PublicUS.c20190509.r20190717.txt" ,
            fwf_positions(start = c(13,475,504),
                          end = c(14,475,507),
                          col_names = c("birth_month","sex", "weigth")
@@ -36,8 +40,8 @@ births2018 <-
 ## Proportions boys/girls
 
 
-```{r pressure, echo=FALSE}
-library(tidyverse)
+```{r}
+
 boy2017 <- births2017 %>% filter(sex=="M") %>% nrow(.) %>% as.numeric(.)
 girls2017 <- births2017 %>% filter(sex=="F") %>% nrow(.) %>% as.numeric(.)
 total2017 <- boy2017+girls2017
@@ -47,7 +51,7 @@ Pgirl2017 <- girls2017/total2017 * 100
 
 The proportion of boys in 2017 is `r Pboy2017`% and the proportion of girls is `r Pgirl2017`%.
 
-```{r pressure, echo=FALSE}
+```{r}
 boy2018 <- births2018 %>% filter(sex=="M") %>% nrow(.) %>% as.numeric(.)
 girls2018 <- births2018 %>% filter(sex=="F") %>% nrow(.) %>% as.numeric(.)
 total2018 <- boy2018+girls2018
@@ -65,28 +69,25 @@ weight2017 <- births2017 %>% summarise(mean(weight))
 births2018$weight <- as.numeric(births2018$weigth)
 weight2018 <- births2018 %>% summarise(mean(weight))
 ```
-The average weight in 2017 is `r weight2017`and in 2018 is `r weight2018`.
+The average weight in 2017 is `r weight2017` grams and in 2018 is `r weight2018` grams.
 
 ## Weigth by month 
 
 ```{r}
 plot <- births2018 %>% filter(sex=='M') %>% group_by(birth_month)%>% summarise(average=mean(weight))
-library(ggplot2)
+
 ggplot(plot, aes(birth_month, average)) +
   geom_point() + ggtitle("Weigth by month for boys")
 ```
 
 ```{r}
 plot2 <- births2018 %>% filter(sex=='F') %>% group_by(birth_month)%>% summarise(average=mean(weight))
-library(ggplot2)
 ggplot(plot2, aes(birth_month, average)) +
   geom_point()+ ggtitle("Weigth by month for girls")
 ```
 
 
-```{r}
-average <- plot %>% summarise(mean(weigth))
-```
+
 
 ## Difference of weight in 2017 and 2018
 
@@ -99,4 +100,4 @@ ggplot(plot2017, aes(birth_month, average)) +
   geom_point()+ ggtitle("Weigth by month in 2017")
 ```
 
-
+We can see some difference between 2017 and 2018. 
